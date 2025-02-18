@@ -9,3 +9,5 @@ Player : Mixamo
 Enemy : Mixamo
 
 Animasyonlar : Mixamo
+
+Joystik : https://assetstore.unity.com/packages/tools/input-management/joystick-pack-107631#content
