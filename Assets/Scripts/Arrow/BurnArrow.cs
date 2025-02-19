@@ -14,6 +14,8 @@ namespace Arrow
         private float _burnDamagePerSecond=3f;
         private float _burnDamageTime=3f;
         
+        
+        
 
         protected override void OnTriggerEnter(Collider other)
         {

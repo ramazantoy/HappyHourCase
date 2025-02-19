@@ -17,11 +17,11 @@ namespace States
         private readonly IEnemyManager _enemyManager;
         private CancellationTokenSource _attackCTS;
 
-        // Bu alanlar AttackRoutine'da hesaplanan parametreleri saklar.
+        
         private int currentBaseArrowCount;
         private float currentComputedAttackSpeed;
-
-        // Enjekte edilen arrow pool referansları.
+        
+        //Inject
         private readonly ObjectPool<BasicArrow> _basicArrowPool;
         private readonly ObjectPool<BounceArrow> _bounceArrowPool;
         private readonly ObjectPool<BurnArrow> _burnArrowPool;
@@ -42,7 +42,6 @@ namespace States
         {
             _playerController.AnimationHandler.SetAttack(true);
             _attackCTS = new CancellationTokenSource();
-            // Oyuncu ShootState'e girerken Y rotasyonunu yavaşça 90°'ye getir.
             SmoothRotateToY90(_attackCTS.Token).Forget();
             AttackRoutineAsync(_attackCTS.Token).Forget();
         }
@@ -66,17 +65,17 @@ namespace States
         {
             while (!token.IsCancellationRequested)
             {
-                float attackSpeedFactor = _playerController.playerSkills.attackSpeedIncrease
-                    ? (_playerController.playerSkills.rageMode ? 4f : 2f)
-                    : 1f;
+                var attackSpeedFactor = 1f;
+                if (_playerController.playerSkills.attackSpeedIncrease)
+                {
+                    attackSpeedFactor = _playerController.playerSkills.rageMode ? 4f : 2f;
+                }
                 currentComputedAttackSpeed = _playerController.baseAttackSpeed * attackSpeedFactor;
                 _playerController.AnimationHandler.SetShootSpeed(currentComputedAttackSpeed);
 
-                currentBaseArrowCount = _playerController.playerSkills.arrowMultiplication ? 2 : 1;
-                if (_playerController.playerSkills.rageMode)
-                {
-                    currentBaseArrowCount = _playerController.playerSkills.arrowMultiplication ? 4 : 2;
-                }
+                currentBaseArrowCount = _playerController.playerSkills.arrowMultiplication 
+                    ? (_playerController.playerSkills.rageMode ? 4 : 2)
+                    : 1;
 
                 await UniTask.Delay(TimeSpan.FromSeconds(1f / currentComputedAttackSpeed), cancellationToken: token);
             }
@@ -103,54 +102,57 @@ namespace States
             }
         }
 
-        private void FireArrows(int arrowCount) {
+        private void FireArrows(int arrowCount)
+        {
             var spawnPoint = _playerController.ArrowTransform.position;
             var target = _enemyManager.GetNearestEnemy(_playerController.transform.position);
             if (target == null) return;
 
-            // Hedefin gövdesinin merkezini al (Collider kullanarak)
-            Vector3 targetPosition = GetTargetBodyCenter(target);
+ 
+            var targetPosition = GetTargetBodyCenter(target);
 
             var arrowSpeed = 50f;
             var velocity = CalculateBallisticVelocity(spawnPoint, targetPosition, arrowSpeed);
 
-            for (int i = 0; i < arrowCount; i++) {
+            for (int i = 0; i < arrowCount; i++)
+            {
                 Vector3 finalVelocity = velocity;
-                if (arrowCount > 1) {
-                    // Açısal ofseti dinamik olarak hesapla (daha küçük açılar kullan)
-                    float angleOffset = (i - (arrowCount - 1) / 2f) * 2f; // 2° spread örneği
+                if (arrowCount > 1)
+                {
+                 
+                    float angleOffset = (i - (arrowCount - 1) / 2f) * 2f; 
                     finalVelocity = Quaternion.Euler(0, angleOffset, 0) * velocity;
                 }
 
                 ArrowBase arrow;
-                if (_playerController.playerSkills.bounceDamage) {
+                if (_playerController.playerSkills.bounceDamage)
+                {
                     BounceArrow bounceArrow = _bounceArrowPool.Spawn();
                     arrow = bounceArrow;
                 }
-                else if (_playerController.playerSkills.burnDamage) {
+                else if (_playerController.playerSkills.burnDamage)
+                {
                     BurnArrow burnArrow = _burnArrowPool.Spawn();
                     arrow = burnArrow;
                 }
-                else {
+                else
+                {
                     arrow = _basicArrowPool.Spawn();
                 }
 
                 arrow.Initialize(spawnPoint, finalVelocity);
-                Debug.DrawRay(spawnPoint, finalVelocity.normalized * 10f, Color.red, 1f); // Debug çizgisi
+                Debug.DrawRay(spawnPoint, finalVelocity.normalized * 10f, Color.red, 1f);
             }
-        }  
-        
-        private Vector3 GetTargetBodyCenter(IEnemy target) {
-            
+        }
+
+        private Vector3 GetTargetBodyCenter(IEnemy target)
+        {
             return target.Position + Vector3.up * 1.5f;
         }
 
-
-
-
         private async UniTask SmoothRotateToY90(CancellationToken token)
         {
-            Quaternion targetRotation = Quaternion.Euler(
+            var targetRotation = Quaternion.Euler(
                 _playerController.transform.eulerAngles.x,
                 90f,
                 _playerController.transform.eulerAngles.z);
@@ -171,24 +173,25 @@ namespace States
         /// Verilen spawn ve hedef konumları, arrowSpeed ve yerçekimi kullanılarak
         /// balistik (parabolik) bir hız vektörü hesaplar.
         /// </summary>
-        private Vector3 CalculateBallisticVelocity(Vector3 start, Vector3 target, float speed) {
-            Vector3 toTarget = target - start;
-            Vector3 toTargetXZ = new Vector3(toTarget.x, 0, toTarget.z);
-            float distance = toTargetXZ.magnitude;
-            float yOffset = toTarget.y;
-            float gravity = Mathf.Abs(Physics.gravity.y);
-            float speedSq = speed * speed;
+        private Vector3 CalculateBallisticVelocity(Vector3 start, Vector3 target, float speed)
+        {
+            var toTarget = target - start;
+            var toTargetXZ = new Vector3(toTarget.x, 0, toTarget.z);
+            var distance = toTargetXZ.magnitude;
+            var yOffset = toTarget.y;
+            var gravity = Mathf.Abs(Physics.gravity.y);
+            var speedSq = speed * speed;
 
-            float discriminant = speedSq * speedSq - gravity * (gravity * distance * distance + 2 * yOffset * speedSq);
-            if (discriminant < 0) {
-                // Eğer hedef çok uzaktaysa, doğrudan hedefe doğru düz bir hız vektörü kullan
+            var discriminant = speedSq * speedSq - gravity * (gravity * distance * distance + 2 * yOffset * speedSq);
+            if (discriminant < 0)
+            {
                 return toTarget.normalized * speed;
             }
 
-            float sqrtDiscriminant = Mathf.Sqrt(discriminant);
-            float angle = Mathf.Atan((speedSq - sqrtDiscriminant) / (gravity * distance));
-            Vector3 horizontalDir = toTargetXZ.normalized;
-            Vector3 result = horizontalDir * speed * Mathf.Cos(angle) + Vector3.up * speed * Mathf.Sin(angle);
+            var sqrtDiscriminant = Mathf.Sqrt(discriminant);
+            var angle = Mathf.Atan((speedSq - sqrtDiscriminant) / (gravity * distance));
+            var horizontalDir = toTargetXZ.normalized;
+            var result = horizontalDir * speed * Mathf.Cos(angle) + Vector3.up * speed * Mathf.Sin(angle);
             return result;
         }
     }
