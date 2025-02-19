@@ -3,7 +3,7 @@ using Interfaces;
 using UnityEngine;
 using Zenject;
 using System.Threading;
-using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace Enemy
 {
@@ -14,6 +14,8 @@ namespace Enemy
     {
         IEnemyManager _enemyManager;
 
+        private SpawnPoint _spawnPoint;
+
         [Inject]
         public void Constructor(IEnemyManager enemyManager)
         {
@@ -21,22 +23,34 @@ namespace Enemy
         }
 
         [SerializeField] private GameObject _flameParticle; // Yanma efekti için particle sistemi
-        private int _burnStack = 0; // Yanma stack sayısı
+        private int _burnStack = 0;
         private CancellationTokenSource _burnCTS; // Yanma işlemini iptal etmek için
 
         private float _health = 100f;
 
         public Vector3 Position => transform.position;
 
+        [SerializeField] private Image _fillImage; // Can barı fill image
+        [SerializeField] private Color _fullHealthColor = Color.green; // Tam can rengi
+        [SerializeField] private Color _midHealthColor = Color.yellow; // Orta can rengi
+        [SerializeField] private Color _lowHealthColor = Color.red; // Düşük can rengi
+
         protected void OnEnable()
         {
             _health = 100f;
             _enemyManager.RegisterEnemy(this);
             _burnCTS = new CancellationTokenSource();
+            UpdateFillColor(); // Can barı rengini güncelle
         }
 
         protected void OnDisable()
         {
+            if (_spawnPoint != null)
+            {
+                _spawnPoint.isOccupied = false;
+            }
+         
+
             if (EnemyManager.IsQuitting) // Zenject bir hata veriyordu onu fixlemek için flag ekledim.
                 return;
 
@@ -52,12 +66,24 @@ namespace Enemy
 
         public virtual void TakeDamage(float damage)
         {
+            
+            if(!gameObject.activeInHierarchy) return;
+            
             _health -= damage;
             if (_health <= 0f)
             {
                 _enemyManager.UnregisterEnemy(this);
                 gameObject.SetActive(false);
             }
+
+            _fillImage.fillAmount = _health / 100f;
+            UpdateFillColor(); // Can barı rengini güncelle
+        }
+
+        public void SetSpawnPoint(SpawnPoint spawnPoint)
+        {
+            _spawnPoint = spawnPoint;
+            _spawnPoint.isOccupied = true;
         }
 
         /// <summary>
@@ -100,6 +126,25 @@ namespace Enemy
                 {
                     _flameParticle.SetActive(false); // Yanma efekti bitince particle'ı kapat
                 }
+            }
+        }
+
+        /// <summary>
+        /// Can barı rengini günceller.
+        /// </summary>
+        private void UpdateFillColor()
+        {
+            float healthRatio = _health / 100f;
+
+            if (healthRatio > 0.5f)
+            {
+                // Yeşilden sarıya geçiş
+                _fillImage.color = Color.Lerp(_midHealthColor, _fullHealthColor, (healthRatio - 0.5f) * 2f);
+            }
+            else
+            {
+                // Sarıdan kırmızıya geçiş
+                _fillImage.color = Color.Lerp(_lowHealthColor, _midHealthColor, healthRatio * 2f);
             }
         }
     }
