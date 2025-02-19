@@ -71,7 +71,7 @@ MonoBehaviour:
   _arrowBaseDataContainer: {fileID: 11400000, guid: 9e384c024762ca84d8ab61b5c5d7f791, type: 2}
   trailRenderer: {fileID: 2799274786766703892}
   maxBounceCount: 1
-  bounceSpeed: 10
+  bounceSpeed: 30
 --- !u!1 &5447922940259432725
 GameObject:
   m_ObjectHideFlags: 0
