@@ -9,17 +9,18 @@ namespace MonoInstallers
     public class EnemyInstaller : MonoInstaller
     {
         [SerializeField] private  EnemyManager _instance; 
-        [SerializeField] private EnemyYBot enemyPrefab; 
+        [SerializeField] private EnemyYBot enemyPrefab;
+        [SerializeField] private Transform _enemyPoolTransform;
         public override void InstallBindings()
         {
             Container.Bind<IEnemyManager>()
                 .FromInstance(_instance)
                 .AsSingle();
             
-            Container.BindMemoryPool<EnemyYBot, EnemyMemoryPool>()
-                .WithInitialSize(10)
+            Container.BindMemoryPool<EnemyBase,ObjectPool<EnemyBase>>()
+                .WithInitialSize(20)
                 .FromComponentInNewPrefab(enemyPrefab)
-                .UnderTransformGroup("EnemyPool");
+                .UnderTransform(_enemyPoolTransform);
         }
     }
 }

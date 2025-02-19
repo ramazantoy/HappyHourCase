@@ -4,12 +4,13 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Enemy;
 using Interfaces;
+using Player;
 
 namespace States
 {
     public class ShootState : ICharacterState {
         private readonly PlayerController _playerController;
-        private readonly IArrowPool _arrowPool;
+        //private readonly IArrowPool _arrowPool;
         private readonly IEnemyManager _enemyManager;
         private CancellationTokenSource _attackCTS;
 
@@ -17,9 +18,9 @@ namespace States
         private int currentBaseArrowCount;
         private float currentComputedAttackSpeed;
 
-        public ShootState(PlayerController playerController, IArrowPool arrowPool, IEnemyManager enemyManager) {
+        public ShootState(PlayerController playerController/*,IArrowPool arrowPool*/, IEnemyManager enemyManager) {
             _playerController = playerController;
-            _arrowPool = arrowPool;
+            //_arrowPool = arrowPool;
             _enemyManager = enemyManager;
         }
 
@@ -96,14 +97,14 @@ namespace States
                     float angleOffset = (i - (arrowCount - 1) / 2f) * 5f; // 5° spread örneği
                     finalVelocity = Quaternion.Euler(0, angleOffset, 0) * velocity;
                 }
-                var arrow = _arrowPool.GetArrow();
-                float arrowDamage = 10f;
-                arrow.InitializeWithVelocity(spawnPoint, finalVelocity, arrowDamage,
-                    _playerController.playerSkills.bounceDamage,
-                    _playerController.playerSkills.rageMode ? 2 : 1,
-                    _playerController.playerSkills.burnDamage,
-                    _playerController.playerSkills.rageMode ? 6f : 3f);
-                Debug.DrawRay(spawnPoint, finalVelocity * 5f, Color.red, 1f);
+                // var arrow = _arrowPool.GetArrow();
+                // float arrowDamage = 10f;
+                // arrow.InitializeWithVelocity(spawnPoint, finalVelocity, arrowDamage,
+                //     _playerController.playerSkills.bounceDamage,
+                //     _playerController.playerSkills.rageMode ? 2 : 1,
+                //     _playerController.playerSkills.burnDamage,
+                //     _playerController.playerSkills.rageMode ? 6f : 3f);
+                // Debug.DrawRay(spawnPoint, finalVelocity * 5f, Color.red, 1f);
             }
         }
 

@@ -1,4 +1,5 @@
 using Interfaces;
+using Player;
 
 namespace States
 {
