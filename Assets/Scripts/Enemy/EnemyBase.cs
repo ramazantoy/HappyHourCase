@@ -12,6 +12,7 @@ namespace Enemy
     /// </summary>
     public class EnemyBase : MonoBehaviour, IEnemy
     {
+        [SerializeField]
         private EnemyBaseDataContainer _enemyBaseDataContainer;
 
         [SerializeField] private GameObject _flameParticle;

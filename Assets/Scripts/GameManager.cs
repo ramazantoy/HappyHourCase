@@ -1,15 +1,20 @@
-
 using System;
-using Player;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField]
-    private PlayerController _playerControllerPref;
+    [SerializeField] private List<GameObject> _maps;
 
-    private void Start()
+    private void Awake()
     {
-        Instantiate(_playerControllerPref,new Vector3(0,0,-7),Quaternion.identity);
+        GenerateRandomMap();
+    }
+
+    private void GenerateRandomMap()
+    {
+        var index = UnityEngine.Random.Range(0, _maps.Count);
+
+        _maps[index].SetActive(true);
     }
 }

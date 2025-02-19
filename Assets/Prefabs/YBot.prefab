@@ -11067,11 +11067,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4448d4759cb54c54dafda688fa230e9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemyBaseDataContainer: {fileID: 11400000, guid: 29adb1c66263a684bbdb16e52c848e67, type: 2}
   _flameParticle: {fileID: 3365866079084620654}
   _fillImage: {fileID: 6381024419114827353}
-  _fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
-  _midHealthColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  _lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!136 &3550972890951932759
 CapsuleCollider:
   m_ObjectHideFlags: 0
