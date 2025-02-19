@@ -30267,6 +30267,10 @@ PrefabInstance:
       propertyPath: baseAttackSpeed
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2995160199535841260, guid: bbb08fcea85cbba429774521992f1379, type: 3}
+      propertyPath: _playerDataContainer
+      value: 
+      objectReference: {fileID: 11400000, guid: f9736f7da55cdb643a74e00465fdaa4a, type: 2}
     - target: {fileID: 4537385883784305261, guid: bbb08fcea85cbba429774521992f1379, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

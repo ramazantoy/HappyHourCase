@@ -17,10 +17,11 @@ namespace States
         private readonly IEnemyManager _enemyManager;
         private CancellationTokenSource _attackCTS;
 
-        
+
         private int currentBaseArrowCount;
         private float currentComputedAttackSpeed;
-        
+
+
         //Inject
         private readonly ObjectPool<BasicArrow> _basicArrowPool;
         private readonly ObjectPool<BounceArrow> _bounceArrowPool;
@@ -70,10 +71,11 @@ namespace States
                 {
                     attackSpeedFactor = _playerController.playerSkills.rageMode ? 4f : 2f;
                 }
-                currentComputedAttackSpeed = _playerController.baseAttackSpeed * attackSpeedFactor;
+
+                currentComputedAttackSpeed = _playerController.BaseAttackSpeed * attackSpeedFactor;
                 _playerController.AnimationHandler.SetShootSpeed(currentComputedAttackSpeed);
 
-                currentBaseArrowCount = _playerController.playerSkills.arrowMultiplication 
+                currentBaseArrowCount = _playerController.playerSkills.arrowMultiplication
                     ? (_playerController.playerSkills.rageMode ? 4 : 2)
                     : 1;
 
@@ -108,7 +110,7 @@ namespace States
             var target = _enemyManager.GetNearestEnemy(_playerController.transform.position);
             if (target == null) return;
 
- 
+
             var targetPosition = GetTargetBodyCenter(target);
 
             var arrowSpeed = 50f;
@@ -119,8 +121,7 @@ namespace States
                 Vector3 finalVelocity = velocity;
                 if (arrowCount > 1)
                 {
-                 
-                    float angleOffset = (i - (arrowCount - 1) / 2f) * 2f; 
+                    float angleOffset = (i - (arrowCount - 1) / 2f) * 2f;
                     finalVelocity = Quaternion.Euler(0, angleOffset, 0) * velocity;
                 }
 
@@ -162,7 +163,7 @@ namespace States
                 _playerController.transform.rotation = Quaternion.Slerp(
                     _playerController.transform.rotation,
                     targetRotation,
-                    Time.unscaledDeltaTime * _playerController.rotationSpeed);
+                    Time.unscaledDeltaTime * _playerController.RotationSpeed);
                 await UniTask.Yield(token);
             }
 

@@ -11,11 +11,19 @@ namespace Player
 {
     public class PlayerController : MonoBehaviour
     {
+        [SerializeField]
+        private PlayerDataContainer _playerDataContainer;
+        public float RotationSpeed => _playerDataContainer.RotationSpeed;
+        public float BaseAttackSpeed => _playerDataContainer.BaseAttackSpeed;
+        
+        public Transform ArrowTransform => arrowTransform;
+        
+        
+        [Header("**Editor Values**")]
+        [SerializeField] private PlayerState currentPlayerState;
         [SerializeField] private Animator animator;
-        [SerializeField] private float speed = 5f;
-        [SerializeField] private float minX = -10f;
-        [SerializeField] private float maxX = 10f;
-        public float rotationSpeed = 10f;
+        [SerializeField] private Transform arrowTransform;
+    
 
         [Inject] private IEnemyManager _enemyManager;
         
@@ -23,11 +31,11 @@ namespace Player
         public IAnimationHandler AnimationHandler { get; private set; }
 
         [SerializeField] private VariableJoystick _joystick;
-        [SerializeField] private Transform arrowTransform;
-        public Transform ArrowTransform => arrowTransform;
+     
+
 
         public PlayerSkills playerSkills;
-        public float baseAttackSpeed = 1f;
+
         
         [Inject] private ObjectPool<BasicArrow> _basicArrowPool;
         [Inject] private ObjectPool<BounceArrow> _bounceArrowPool;
@@ -38,7 +46,9 @@ namespace Player
         private MoveState moveState;
         private ShootState shootState;
 
-        [SerializeField] private PlayerState currentPlayerState;
+ 
+
+  
 
         private void Start()
         {
@@ -97,16 +107,16 @@ namespace Player
         public void MoveCharacter(Vector3 movement)
         {
             var newPos = transform.position;
-            newPos.x += movement.x * speed * Time.deltaTime;
-            newPos.x = Mathf.Clamp(newPos.x, minX, maxX);
-            newPos.z += movement.z * speed * Time.deltaTime;
-            newPos.z = Mathf.Clamp(newPos.z, -8, -3.5f);
+            newPos.x += movement.x * _playerDataContainer.MovementSpeed * Time.deltaTime;
+            newPos.x = Mathf.Clamp(newPos.x, _playerDataContainer.MovementClamps.MinX, _playerDataContainer.MovementClamps.MaxX);
+            newPos.z += movement.z * _playerDataContainer.MovementSpeed * Time.deltaTime;
+            newPos.z = Mathf.Clamp(newPos.z, _playerDataContainer.MovementClamps.MinZ, _playerDataContainer.MovementClamps.MaxZ);
             transform.position = newPos;
 
             if (movement.magnitude > 0.1f)
             {
                 var targetRotation = Quaternion.LookRotation(movement, Vector3.up);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _playerDataContainer.RotationSpeed);
             }
 
             AnimationHandler.SetMovementSpeed(movement.magnitude);
