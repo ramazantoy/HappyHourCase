@@ -46,7 +46,11 @@ namespace Arrow
         protected override void ReturnToPool()
         {
             base.ReturnToPool();
-            _pool.Despawn(this);
+
+            if (_pool != null)
+            {
+                _pool.Despawn(this);
+            }
         }
     }
 }

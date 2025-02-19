@@ -19,12 +19,9 @@ namespace Arrow
 
         private int remainingBounces;
         private bool isBouncing = false;
-
         private CancellationTokenSource _cts;
 
-        // Vurulan enemy'leri tutmak için liste
         private List<IEnemy> _hitEnemies = new List<IEnemy>();
-
 
         protected void Awake()
         {
@@ -32,10 +29,8 @@ namespace Arrow
             {
                 trailRenderer.enabled = false;
             }
-
             _cts = new CancellationTokenSource();
         }
-
 
         public override void Initialize(Vector3 startPosition, Vector3 direction)
         {
@@ -46,51 +41,72 @@ namespace Arrow
                 trailRenderer.enabled = true;
                 trailRenderer.Clear();
             }
-
-            remainingBounces = maxBounceCount;
             isBouncing = false;
             _hitEnemies.Clear();
             _cts?.Cancel();
             _cts = new CancellationTokenSource();
+            
         }
 
-        // Eğer bounce başladıysa, OnTriggerEnter çağrılarını yoksayalım.
+        public void OnRageMode()
+        {
+            remainingBounces = maxBounceCount * 2;
+        }
+        
         protected override void OnTriggerEnter(Collider other)
         {
+            
+     
+            if (!isInitialized) return;
+            
             if (!other.TryGetComponent(out IEnemy enemy)) return;
+            
+            if (isBouncing) return;
 
-
-            enemy.TakeDamage(BaseDamage);
-
-            if (_hitEnemies.Contains(enemy)) return;
-            _hitEnemies.Add(enemy);
-
-
-            if (remainingBounces > 0)
+            if (!_hitEnemies.Contains(enemy))
             {
+                enemy.TakeDamage(BaseDamage);
+                _hitEnemies.Add(enemy);
+            }
+            
+            isBouncing = true;
+            BounceLoopAsync(_cts.Token).Forget();
+        }
+        
+        private async UniTask BounceLoopAsync(CancellationToken token)
+        {
+            while (remainingBounces > 0 && !token.IsCancellationRequested)
+            {
+                await UniTask.Delay(50, cancellationToken: token);
+                
+                if (!gameObject.activeInHierarchy) break;
+        
                 var nextEnemy = FindNextEnemy();
-
-                if (nextEnemy != null && isBouncing == false)
+                if (nextEnemy == null)
                 {
-                    Vector3 nextTargetPos = nextEnemy.Position + Vector3.up * 1.5f;
-                    PerformBounceAsync(transform.position, nextTargetPos, _cts.Token).Forget();
-                    return;
+                    break;
+                }
+        
+                Vector3 nextTargetPos = nextEnemy.Position + Vector3.up * 1.5f;
+                await PerformBounceAsync(transform.position, nextTargetPos, token);
+        
+                if (!_hitEnemies.Contains(nextEnemy))
+                {
+                    nextEnemy.TakeDamage(BaseDamage);
+                    _hitEnemies.Add(nextEnemy);
+                    remainingBounces--;
                 }
             }
-
             ReturnToPool();
         }
 
-        private async UniTaskVoid PerformBounceAsync(Vector3 startPoint, Vector3 targetPoint,
-            CancellationToken cancellationToken)
+     
+        private async UniTask PerformBounceAsync(Vector3 startPoint, Vector3 targetPoint, CancellationToken cancellationToken)
         {
-            isBouncing = true;
-            remainingBounces--;
-
-            float distance = Vector3.Distance(startPoint, targetPoint);
-            float bounceTravelTime = distance / bounceSpeed; // Dinamik travel time
-            float startTime = Time.time;
-            float rotationSmoothSpeed = 10f;
+            var distance = Vector3.Distance(startPoint, targetPoint);
+            var bounceTravelTime = distance / bounceSpeed; 
+            var startTime = Time.time;
+            var rotationSmoothSpeed = 10f;
 
             try
             {
@@ -101,7 +117,6 @@ namespace Arrow
                     transform.position = position;
 
                     RotateTowardsTarget(targetPoint, rotationSmoothSpeed);
-
                     await UniTask.Yield(cancellationToken);
                 }
             }
@@ -114,21 +129,16 @@ namespace Arrow
 
             position = targetPoint;
             transform.position = position;
-
             var finalDirection = (targetPoint - transform.position).normalized;
             velocity = finalDirection * bounceSpeed;
-            // transform.rotation = Quaternion.LookRotation(finalDirection);
-            lifeTimer = Mathf.Max(lifeTimer, 1.5f);
-            isBouncing = false;
         }
 
         private void RotateTowardsTarget(Vector3 targetPoint, float rotationSmoothSpeed)
         {
-            Vector3 lookTarget = targetPoint;
-            Quaternion desiredRotation = Quaternion.LookRotation(lookTarget - transform.position);
+            var lookTarget = targetPoint;
+            var desiredRotation = Quaternion.LookRotation(lookTarget - transform.position);
             desiredRotation.x = 0;
-            transform.rotation =
-                Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * rotationSmoothSpeed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * rotationSmoothSpeed);
         }
 
         private IEnemy FindNextEnemy()
@@ -141,22 +151,39 @@ namespace Arrow
                     return cand;
                 }
             }
-
             return null;
         }
 
+        protected override void Update()
+        {
+            if (!isInitialized) return;
+            // Bounce loop kendi içinde remaining kontrolünü yapıyor.
+        }
 
         protected override void ReturnToPool()
         {
+            if (_cts != null)
+            {
+                _cts?.Cancel();
+            }
+    
+            
+            remainingBounces = maxBounceCount;
+            
             base.ReturnToPool();
-            _cts?.Cancel();
-            _pool.Despawn(this);
+            if (_pool != null)
+            {
+                _pool.Despawn(this);
+            }
+    
         }
+
 
         private void OnDestroy()
         {
             _cts?.Cancel();
             _cts?.Dispose();
+            _cts= null;
         }
     }
 }

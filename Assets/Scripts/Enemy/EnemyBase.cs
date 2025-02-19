@@ -25,8 +25,7 @@ namespace Enemy
         private int _burnStack = 0;
         
         private CancellationTokenSource _burnCTS;
-
-
+        
 
         private SpawnPoint _spawnPoint;
 
@@ -68,6 +67,9 @@ namespace Enemy
 
         public virtual void TakeDamage(float damage)
         {
+            if (EnemyManager.IsQuitting) 
+                return;
+            
             if (!gameObject.activeInHierarchy) return;
 
             _health -= damage;

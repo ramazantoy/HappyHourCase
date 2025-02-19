@@ -36,9 +36,9 @@ namespace Enemy
                     _yBotPool.Despawn(enemyBase);
                 }
                 
-                if (_enemies.Count >= 5) return;
+                if (_enemies.Count >= 10) return;
                 
-                var rate = 5 - _enemies.Count;
+                var rate = 10 - _enemies.Count;
                 for (var i = 0; i < rate; i++)
                 {
                     _enemySpawner.SpawnEnemy(); 

@@ -64,23 +64,30 @@ namespace States
 
         private async UniTaskVoid AttackRoutineAsync(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                var attackSpeedFactor = 1f;
-                if (_playerController.playerSkills.attackSpeedIncrease)
+                while (!token.IsCancellationRequested)
                 {
-                    attackSpeedFactor = _playerController.playerSkills.rageMode ? 4f : 2f;
+                    var attackSpeedFactor = 1f;
+                    if (_playerController.playerSkills.attackSpeedIncrease)
+                    {
+                        attackSpeedFactor = _playerController.playerSkills.rageMode ? 4f : 2f;
+                    }
+
+                    currentComputedAttackSpeed = _playerController.BaseAttackSpeed * attackSpeedFactor;
+                    _playerController.AnimationHandler.SetShootSpeed(currentComputedAttackSpeed);
+
+                    currentBaseArrowCount = _playerController.playerSkills.arrowMultiplication
+                        ? (_playerController.playerSkills.rageMode ? 4 : 2)
+                        : 1;
+
+                    await UniTask.Delay(TimeSpan.FromSeconds(1f / currentComputedAttackSpeed), cancellationToken: token);
                 }
-
-                currentComputedAttackSpeed = _playerController.BaseAttackSpeed * attackSpeedFactor;
-                _playerController.AnimationHandler.SetShootSpeed(currentComputedAttackSpeed);
-
-                currentBaseArrowCount = _playerController.playerSkills.arrowMultiplication
-                    ? (_playerController.playerSkills.rageMode ? 4 : 2)
-                    : 1;
-
-                await UniTask.Delay(TimeSpan.FromSeconds(1f / currentComputedAttackSpeed), cancellationToken: token);
             }
+            catch (OperationCanceledException)
+            {
+            }
+   
         }
 
         public void HandleAttackAnimationEvent()
@@ -88,20 +95,28 @@ namespace States
             FireArrows(currentBaseArrowCount);
             if (currentComputedAttackSpeed > 10f)
             {
-                int extraMultiplier = Mathf.FloorToInt(currentComputedAttackSpeed / 10f);
-                int extraShots = currentBaseArrowCount * extraMultiplier;
-                SpawnExtraArrows(extraShots);
+                var extraMultiplier = Mathf.FloorToInt(currentComputedAttackSpeed / 10f);
+                var extraShots = currentBaseArrowCount * extraMultiplier;
+                SpawnExtraArrows(extraShots).Forget();
             }
         }
 
-        private async void SpawnExtraArrows(int extraShots)
+        private async UniTaskVoid SpawnExtraArrows(int extraShots)
         {
-            float shotInterval = 0.2f;
-            for (int i = 0; i < extraShots; i++)
+            var shotInterval = 0.1f;
+            try
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(shotInterval));
-                FireArrows(currentBaseArrowCount);
+                for (var i = 0; i < extraShots; i++)
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(shotInterval),cancellationToken:_attackCTS.Token);
+                    FireArrows(currentBaseArrowCount);
+                }
             }
+            catch (OperationCanceledException)
+            {
+          
+            }
+       
         }
 
         private void FireArrows(int arrowCount)
@@ -118,7 +133,7 @@ namespace States
 
             for (int i = 0; i < arrowCount; i++)
             {
-                Vector3 finalVelocity = velocity;
+                var finalVelocity = velocity;
                 if (arrowCount > 1)
                 {
                     float angleOffset = (i - (arrowCount - 1) / 2f) * 2f;
@@ -128,12 +143,16 @@ namespace States
                 ArrowBase arrow;
                 if (_playerController.playerSkills.bounceDamage)
                 {
-                    BounceArrow bounceArrow = _bounceArrowPool.Spawn();
+                    var bounceArrow = _bounceArrowPool.Spawn();
                     arrow = bounceArrow;
+                    if (_playerController.playerSkills.rageMode)
+                    {
+                        bounceArrow.OnRageMode();
+                    }
                 }
                 else if (_playerController.playerSkills.burnDamage)
                 {
-                    BurnArrow burnArrow = _burnArrowPool.Spawn();
+                    var burnArrow = _burnArrowPool.Spawn();
 
                     if (_playerController.playerSkills.rageMode)
                     {
@@ -159,21 +178,29 @@ namespace States
 
         private async UniTask SmoothRotateToY90(CancellationToken token)
         {
-            var targetRotation = Quaternion.Euler(
-                _playerController.transform.eulerAngles.x,
-                90f,
-                _playerController.transform.eulerAngles.z);
-            while (!token.IsCancellationRequested &&
-                   Quaternion.Angle(_playerController.transform.rotation, targetRotation) > 0.1f)
+            try
             {
-                _playerController.transform.rotation = Quaternion.Slerp(
-                    _playerController.transform.rotation,
-                    targetRotation,
-                    Time.unscaledDeltaTime * _playerController.RotationSpeed);
-                await UniTask.Yield(token);
-            }
+                var targetRotation = Quaternion.Euler(
+                    _playerController.transform.eulerAngles.x,
+                    90f,
+                    _playerController.transform.eulerAngles.z);
+                while (!token.IsCancellationRequested &&
+                       Quaternion.Angle(_playerController.transform.rotation, targetRotation) > 0.1f)
+                {
+                    _playerController.transform.rotation = Quaternion.Slerp(
+                        _playerController.transform.rotation,
+                        targetRotation,
+                        Time.unscaledDeltaTime * _playerController.RotationSpeed);
+                    await UniTask.Yield(token);
+                }
 
-            _playerController.transform.rotation = targetRotation;
+                _playerController.transform.rotation = targetRotation;
+            }
+            catch (OperationCanceledException)
+            {
+            
+            }
+     
         }
 
         /// <summary>

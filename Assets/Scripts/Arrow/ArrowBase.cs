@@ -21,17 +21,22 @@ namespace Arrow
 
 
         // Fizik hesaplamaları FixedUpdate’de yapılıyor.
-        protected virtual void FixedUpdate()
+
+        protected virtual void Update()
         {
             if (!isInitialized) return;
 
-            lifeTimer -= Time.fixedDeltaTime;
+            lifeTimer -= Time.deltaTime;
             if (lifeTimer <= 0f)
             {
                 ReturnToPool();
-                return;
+         
+    
             }
+        }
 
+        protected virtual void FixedUpdate()
+        {
             UpdatePhysics();
         }
 
@@ -80,6 +85,7 @@ namespace Arrow
 
         protected virtual void OnTriggerEnter(Collider other)
         {
+            if (!isInitialized) return;
             if (!other.TryGetComponent(out IEnemy enemy)) return;
 
             enemy.TakeDamage(_arrowBaseDataContainer.Damage);
