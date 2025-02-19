@@ -1,3 +1,4 @@
+using System;
 using Enemy;
 using Interfaces;
 using Pool;
@@ -8,11 +9,9 @@ namespace Arrow
 {
     public class ArrowProjectile : MonoBehaviour
     {
-
-
-        [Inject]
-        private static IEnemyManager _enemyManager;
+        [Inject] private static IEnemyManager _enemyManager;
         
+
         public float speed = 20f;
         public float damage = 10f;
         public float lifetime = 5f;
@@ -26,8 +25,9 @@ namespace Arrow
         public bool burnDamageActive = false;
         public float burnDuration = 3f; // Rage Mode’da 6 saniye.
 
-        public void Initialize(Vector3 startPosition, Vector3 direction, float speed, float damage,
-            bool bounceActive, int bounceCount, bool burnActive, float burnDuration) {
+        private void Initialize(Vector3 startPosition, Vector3 direction, float speed, float damage,
+            bool bounceActive, int bounceCount, bool burnActive, float burnDuration)
+        {
             transform.position = startPosition;
             transform.rotation = Quaternion.LookRotation(direction);
             this.speed = speed;
@@ -37,55 +37,78 @@ namespace Arrow
             this.burnDamageActive = burnActive;
             this.burnDuration = burnDuration;
 
-            if(rb == null)
-                rb = GetComponent<Rigidbody>();
             rb.velocity = direction * speed;
             lifeTimer = lifetime;
             isInitialized = true;
         }
 
-        private void Awake() {
+        private void Awake()
+        {
             rb = GetComponent<Rigidbody>();
         }
 
-        private void Update() {
-            if (!isInitialized) return;
-            lifeTimer -= Time.deltaTime;
-            if(lifeTimer <= 0f) {
-                Deactivate();
+        private void FixedUpdate()
+        {
+            if (!Physics.Raycast(transform.position, rb.velocity.normalized, out var hit,
+                    speed * Time.deltaTime)) return;
+            
+            
+            var enemyBase = hit.collider.GetComponent<EnemyBase>();
+            
+            if (enemyBase == null) return;
+            
+            enemyBase.TakeDamage(damage);
+            if (burnDamageActive)
+            {
+                // Örneğin: enemy.ApplyBurn(burnDuration);
             }
-            // Raycast ile ileriye doğru çarpışma kontrolü (kolayca OnCollisionEnter ile de yapılabilir)
-            RaycastHit hit;
-            if(Physics.Raycast(transform.position, rb.velocity.normalized, out hit, speed * Time.deltaTime)) {
-                Enemy.EnemyBase enemyBase = hit.collider.GetComponent<Enemy.EnemyBase>();
-                if(enemyBase != null) {
-                    enemyBase.TakeDamage(damage);
-                    // Burn Damage aktifse enemy’ye ek hasar (stackable burn) uygulayabiliriz.
-                    if(burnDamageActive) {
-                        // Örneğin: enemy.ApplyBurn(burnDuration);
-                    }
-                    // Bounce Damage: Eğer aktifse, kalan bounce hakkına göre ok hedefi değiştirir.
-                    if(bounceDamageActive && bounceCount > 0) {
-                       
-                        var nextEnemyBase = _enemyManager.GetNearestEnemy(hit.point);
-                        if(nextEnemyBase != null && nextEnemyBase != enemyBase) {
-                            var newDir = (nextEnemyBase.transform.position - hit.point).normalized;
-                            bounceCount--;
-                            Initialize(hit.point, newDir, speed, damage, bounceDamageActive, bounceCount, burnDamageActive, burnDuration);
-                            return;
-                        }
-                    }
-                }
-                Deactivate();
-            }
+
+            if (!bounceDamageActive || bounceCount <= 0) return;
+            
+            var nextEnemyBase = _enemyManager.GetNearestEnemy(hit.point);
+            
+            if (nextEnemyBase == null || nextEnemyBase == enemyBase) return;
+            
+            var newDir = (nextEnemyBase.transform.position - hit.point).normalized;
+            bounceCount--;
+            Initialize(hit.point, newDir, speed, damage, bounceDamageActive, bounceCount,
+                burnDamageActive, burnDuration);
+            return;
         }
 
-        private void Deactivate() {
+        private void Update()
+        {
+            if (!isInitialized) return;
+            lifeTimer -= Time.deltaTime;
+            if (lifeTimer <= 0f)
+            {
+                Deactivate();
+            }
+        
+        }
+
+        private void Deactivate()
+        {
             isInitialized = false;
             rb.velocity = Vector3.zero;
             gameObject.SetActive(false);
-            // Havuz sistemine geri gönderiyoruz.
-           // ArrowPool.Instance.ReturnArrow(this);
+
+        }
+
+        public void InitializeWithVelocity(Vector3 startPosition, Vector3 velocity, float damage,
+            bool bounceActive, int bounceCount, bool burnActive, float burnDuration)
+        {
+            transform.position = startPosition;
+            transform.rotation = Quaternion.LookRotation(velocity);
+            this.damage = damage;
+            this.bounceDamageActive = bounceActive;
+            this.bounceCount = bounceCount;
+            this.burnDamageActive = burnActive;
+            this.burnDuration = burnDuration;
+
+            rb.velocity = velocity;
+            lifeTimer = lifetime;
+            isInitialized = true;
         }
     }
 }

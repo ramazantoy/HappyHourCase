@@ -56,15 +56,13 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        float horizontal = InputProvider.GetHorizontal();
-        // Hareket input'u varsa, her durumda MoveState'e geç.
-        if (Mathf.Abs(horizontal) > 0.1f)
+        var movement = InputProvider.GetMovement();
+        if (movement.magnitude > 0.1f)
         {
             ChangeState(moveState);
         }
         else
         {
-            // Eğer enemy varsa ShootState, yoksa IdleState'e geç.
             if (_enemyManager.GetNearestEnemy(transform.position) != null)
             {
                 ChangeState(shootState);
@@ -95,24 +93,24 @@ public class PlayerController : MonoBehaviour
         currentState.Enter();
     }
 
-    public void MoveCharacter(float horizontal)
+    public void MoveCharacter(Vector3 movement)
     {
-        Vector3 newPos = transform.position;
-        newPos.x += horizontal * speed * Time.deltaTime;
+        var newPos = transform.position;
+        newPos.x += movement.x * speed * Time.deltaTime;
         newPos.x = Mathf.Clamp(newPos.x, minX, maxX);
+        newPos.z += movement.z * speed * Time.deltaTime;
+        newPos.z = Mathf.Clamp(newPos.z, -8, -3.5f);
         transform.position = newPos;
 
-        if (Mathf.Abs(horizontal) > 0.1f)
+        if (movement.magnitude > 0.1f)
         {
-            Vector3 targetDirection = new Vector3(horizontal, 0f, 0f);
-            Quaternion targetRotation = Quaternion.LookRotation(targetDirection, Vector3.up);
+            var targetRotation = Quaternion.LookRotation(movement, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }
 
-        AnimationHandler.SetMovementSpeed(Mathf.Abs(horizontal));
+        AnimationHandler.SetMovementSpeed(movement.magnitude);
     }
-
-    // Bu metod, animasyon event'inden çağrılır.
+    
     public void OnAttackAnimationEvent() {
         if (currentState is ShootState shootState)
         {

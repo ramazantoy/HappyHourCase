@@ -1,6 +1,12 @@
+
+
+using UnityEngine;
+
 namespace Interfaces
 {
     public interface IInputProvider {
-        float GetHorizontal();
+        Vector3 GetMovement();
+        
+        float GetHorizontalInput();
     }
 }

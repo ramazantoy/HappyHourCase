@@ -14,8 +14,8 @@ namespace States
         public void Exit() { }
 
         public void OnTick() {
-            var horizontal = player.InputProvider.GetHorizontal();
-            player.MoveCharacter(horizontal);
+  
+            player.MoveCharacter( player.InputProvider.GetMovement());
         }
     }
 }

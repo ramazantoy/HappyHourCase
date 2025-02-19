@@ -1,4 +1,5 @@
 using Interfaces;
+using UnityEngine;
 
 public class JoystickInputProvider : IInputProvider {
     
@@ -8,7 +9,12 @@ public class JoystickInputProvider : IInputProvider {
         this.joystick = joystick;
     }
 
-    public float GetHorizontal() {
+    public Vector3 GetMovement() {
+        return new Vector3(joystick.Horizontal, 0, joystick.Vertical);
+    }
+
+    public float GetHorizontalInput()
+    {
         return joystick.Horizontal;
     }
 }

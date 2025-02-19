@@ -84,22 +84,26 @@ namespace States
             // Hedef olarak en yakın enemy belirleniyor.
             EnemyBase target = _enemyManager.GetNearestEnemy(_playerController.transform.position);
             if (target == null) return;
-            Vector3 targetDir = (target.transform.position - spawnPoint).normalized;
+    
+            // Balistik hesaplama: spawn noktasından enemy'nin konumuna ulaşacak hız vektörünü hesaplıyoruz.
+            float arrowSpeed = 20f;
+            Vector3 velocity = CalculateBallisticVelocity(spawnPoint, target.transform.position, arrowSpeed);
+    
+            // Eğer birden fazla ok atılacaksa, spread eklemek için küçük açılarla rotasyon yapabiliriz.
             for (int i = 0; i < arrowCount; i++) {
-                Vector3 finalDir = targetDir;
+                Vector3 finalVelocity = velocity;
                 if (arrowCount > 1) {
                     float angleOffset = (i - (arrowCount - 1) / 2f) * 5f; // 5° spread örneği
-                    finalDir = Quaternion.Euler(0, angleOffset, 0) * targetDir;
+                    finalVelocity = Quaternion.Euler(0, angleOffset, 0) * velocity;
                 }
                 var arrow = _arrowPool.GetArrow();
-                float arrowSpeed = 20f;
                 float arrowDamage = 10f;
-                arrow.Initialize(spawnPoint, finalDir, arrowSpeed, arrowDamage,
+                arrow.InitializeWithVelocity(spawnPoint, finalVelocity, arrowDamage,
                     _playerController.playerSkills.bounceDamage,
                     _playerController.playerSkills.rageMode ? 2 : 1,
                     _playerController.playerSkills.burnDamage,
                     _playerController.playerSkills.rageMode ? 6f : 3f);
-                Debug.DrawRay(spawnPoint, finalDir * 5f, Color.red, 1f);
+                Debug.DrawRay(spawnPoint, finalVelocity * 5f, Color.red, 1f);
             }
         }
 
@@ -119,5 +123,33 @@ namespace States
             }
             _playerController.transform.rotation = targetRotation;
         }
+        
+        /// <summary>
+        /// Verilen spawn ve hedef konumları, arrowSpeed ve yerçekimi kullanılarak
+        /// balistik (parabolik) bir hız vektörü hesaplar.
+        /// </summary>
+        private Vector3 CalculateBallisticVelocity(Vector3 start, Vector3 target, float speed) {
+            Vector3 toTarget = target - start;
+            // Yalnızca yatay mesafeyi alıyoruz:
+            Vector3 toTargetXZ = new Vector3(toTarget.x, 0, toTarget.z);
+            float distance = toTargetXZ.magnitude;
+            float yOffset = toTarget.y;
+            float gravity = Mathf.Abs(Physics.gravity.y);
+            float speedSq = speed * speed;
+    
+            // Denklemin diskriminantı:
+            float discriminant = speedSq * speedSq - gravity * (gravity * distance * distance + 2 * yOffset * speedSq);
+            if (discriminant < 0) {
+                // Gerçek bir çözüm yoksa, direk hedefe doğru fırlat.
+                return (toTarget).normalized * speed;
+            }
+            float sqrtDiscriminant = Mathf.Sqrt(discriminant);
+            // Daha düz (daha düşük açı) yörüngeyi seçiyoruz:
+            float angle = Mathf.Atan((speedSq - sqrtDiscriminant) / (gravity * distance));
+            Vector3 horizontalDir = toTargetXZ.normalized;
+            Vector3 result = horizontalDir * speed * Mathf.Cos(angle) + Vector3.up * speed * Mathf.Sin(angle);
+            return result;
+        }
+
     }
 }

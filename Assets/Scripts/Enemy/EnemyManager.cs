@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using Interfaces;
+using Pool;
 using UnityEngine;
 using Zenject;
 
@@ -7,7 +9,7 @@ namespace Enemy
 {
     public class EnemyManager : MonoBehaviour, IEnemyManager {
         
-        
+        [Inject] private EnemyMemoryPool _enemyPool;
         private List<EnemyBase> _enemies = new List<EnemyBase>();
 
         [SerializeField] private EnemySpawner _enemySpawner;
@@ -20,9 +22,15 @@ namespace Enemy
         public void UnregisterEnemy(EnemyBase enemyBase) {
             if (_enemies.Contains(enemyBase)) {
                 _enemies.Remove(enemyBase);
-                // Sürekli en az 5 enemy olması için:
-                while(_enemies.Count < 5) {
-                    _enemySpawner.SpawnEnemy();
+                
+               _enemyPool.Despawn(enemyBase);
+                if (_enemies.Count >= 5) return;
+                
+                var rate = 5 - _enemies.Count;
+
+                for (int i = 0; i < rate; i++)
+                {
+                    _enemySpawner.SpawnEnemy(); 
                 }
             }
         }

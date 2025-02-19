@@ -6,35 +6,36 @@ using Zenject;
 namespace Enemy
 {
     public class EnemyBase : MonoBehaviour
-    {   
-        
-        [Inject]
-        private IEnemyManager _enemyManager;
-        
+    {
+        [Inject] private IEnemyManager _enemyManager;
 
-        public float health = 100f;
 
-    
+        private float _health = 100f;
+
 
         public virtual void TakeDamage(float damage)
         {
-            health -= damage;
+            _health -= damage;
 
-            if (!(health <= 0f)) return;
+            if (!(_health <= 0f)) return;
 
 
             _enemyManager.UnregisterEnemy(this);
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
 
-        protected  void OnEnable()
+        protected void OnEnable()
         {
+            _health = 100f;
             _enemyManager.RegisterEnemy(this);
         }
 
         protected void OnDisable()
         {
-            _enemyManager.UnregisterEnemy(this);
+            if (_enemyManager != null)
+            {
+                _enemyManager.UnregisterEnemy(this);
+            }
         }
     }
 }

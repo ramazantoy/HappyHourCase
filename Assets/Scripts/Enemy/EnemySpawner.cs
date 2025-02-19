@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Pool;
 using UnityEngine;
 using Zenject;
 
@@ -27,7 +28,6 @@ namespace Enemy
             if(enemy==null || spawnPoint==null) return;
             
             enemy.transform.position = spawnPoint.position;
-            //enemy.transform.rotation = spawnPoint.rotation;
         }
     }
 }

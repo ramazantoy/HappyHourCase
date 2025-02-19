@@ -1,23 +1,10 @@
+using Enemy;
 using Zenject;
-using UnityEngine;
 
-namespace Enemy
+namespace Pool
 {
-    public class EnemyMemoryPool : MemoryPool<EnemyYBot>
+    public class EnemyMemoryPool : MemoryPool<EnemyBase>
     {
-        protected override void OnCreated(EnemyYBot enemy)
-        {
-     
-        }
-
-        protected override void OnSpawned(EnemyYBot enemy)
-        {
-            enemy.gameObject.SetActive(true);
-        }
-
-        protected override void OnDespawned(EnemyYBot enemy)
-        {
-            enemy.gameObject.SetActive(false);
-        }
+   
     }
 }
