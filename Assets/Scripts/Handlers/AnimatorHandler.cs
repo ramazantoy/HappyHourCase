@@ -16,5 +16,10 @@ namespace Handlers
         public void SetAttack(bool attack) {
             animator.SetBool("Attack", attack);
         }
+
+        public void SetShootSpeed(float speed)
+        {
+            animator.SetFloat("ShootSpeed", speed);
+        }
     }
 }

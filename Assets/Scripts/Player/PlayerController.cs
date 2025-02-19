@@ -1,5 +1,7 @@
+using Arrow;
 using Handlers;
 using Interfaces;
+using Pool;
 using Skills;
 using States;
 using UnityEngine;
@@ -15,11 +17,9 @@ namespace Player
         [SerializeField] private float maxX = 10f;
         public float rotationSpeed = 10f;
 
-
         [Inject] private IEnemyManager _enemyManager;
         
         public IInputProvider InputProvider { get; private set; }
-        
         public IAnimationHandler AnimationHandler { get; private set; }
 
         [SerializeField] private VariableJoystick _joystick;
@@ -28,6 +28,10 @@ namespace Player
 
         public PlayerSkills playerSkills;
         public float baseAttackSpeed = 1f;
+        
+        [Inject] private ObjectPool<BasicArrow> _basicArrowPool;
+        [Inject] private ObjectPool<BounceArrow> _bounceArrowPool;
+        [Inject] private ObjectPool<BurnArrow> _burnArrowPool;
 
         private ICharacterState currentState;
         private IdleState idleState;
@@ -36,7 +40,6 @@ namespace Player
 
         [SerializeField] private PlayerState currentPlayerState;
 
-
         private void Start()
         {
             InputProvider = new JoystickInputProvider(_joystick);
@@ -44,7 +47,8 @@ namespace Player
 
             idleState = new IdleState(this);
             moveState = new MoveState(this);
-            shootState = new ShootState(this, /*, _arrowPool,*/ _enemyManager);
+            // ShootState artık arrow pool referanslarını da alıyor.
+            shootState = new ShootState(this, _enemyManager, _basicArrowPool, _bounceArrowPool, _burnArrowPool);
 
             currentState = idleState;
             currentPlayerState = PlayerState.Idle;
@@ -102,17 +106,16 @@ namespace Player
             if (movement.magnitude > 0.1f)
             {
                 var targetRotation = Quaternion.LookRotation(movement, Vector3.up);
-                transform.rotation =
-                    Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
             }
 
             AnimationHandler.SetMovementSpeed(movement.magnitude);
         }
 
+        // Animasyon event'inden çağrılır.
         public void OnAttackAnimationEvent()
         {
             if (currentPlayerState != PlayerState.Shoot) return;
-
             shootState.HandleAttackAnimationEvent();
         }
 

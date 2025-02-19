@@ -8,7 +8,7 @@ namespace Enemy
     /// <summary>
     /// Enemy'in base sınıfı ilerde başka enemyle eklenirse bu sınıftan inherit olup özellik olarak ayrıştırılabilirler
     /// </summary>
-    public class EnemyBase : MonoBehaviour
+    public class EnemyBase : MonoBehaviour,IEnemy
     {
          IEnemyManager _enemyManager;
 
@@ -30,6 +30,8 @@ namespace Enemy
             _enemyManager.UnregisterEnemy(this);
             gameObject.SetActive(false);
         }
+
+        public Vector3 Position => transform.position;
 
         protected void OnEnable()
         {

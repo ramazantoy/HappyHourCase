@@ -4842,7 +4842,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2920288840295101460}
-  - component: {fileID: 6939348778673458877}
   - component: {fileID: 3665761940000900692}
   - component: {fileID: 8358935643505386805}
   m_Layer: 0
@@ -4869,33 +4868,6 @@ Transform:
   - {fileID: 3852703108347890287}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &6939348778673458877
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2086692336268603855}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!65 &3665761940000900692
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4929,10 +4901,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31f798c9c77d90349ac806c05806e131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 20
+  speed: 50
   damage: 10
   lifetime: 5
+  gravity: 9.8
+  airResistance: 0.1
+  stabilizationFactor: 5
+  trailRenderer: {fileID: 0}
+  rotationSmoothing: 10
   burnDuration: 3
+  flameEffect: {fileID: 0}
+  fireLight: {fileID: 0}
+  fireLightIntensity: 1.5
+  fireColor: {r: 1, g: 0.7, b: 0.3, a: 1}
 --- !u!1 &4822043093190279811
 GameObject:
   m_ObjectHideFlags: 0

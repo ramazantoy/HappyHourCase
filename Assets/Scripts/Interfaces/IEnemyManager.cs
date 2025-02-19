@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using Enemy;
 using UnityEngine;
 
@@ -14,5 +15,7 @@ namespace Interfaces
         void UnregisterEnemy(EnemyBase enemyBase);
 
         EnemyBase GetNearestEnemy(Vector3 pos);
+
+        List<EnemyBase>  GetNearestEnemies(Vector3 pos, int order);
     }
 }

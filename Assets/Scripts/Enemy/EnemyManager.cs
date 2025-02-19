@@ -49,20 +49,18 @@ namespace Enemy
         public EnemyBase GetNearestEnemy(Vector3 position) 
         {
             EnemyBase nearest = null;
-            float minDist = Mathf.Infinity;
+            var minDist = Mathf.Infinity;
             foreach (var enemy in _enemies) 
             {
                 if (enemy == null) continue;
-                float dist = Vector3.Distance(position, enemy.transform.position);
-                if (dist < minDist) 
-                {
-                    minDist = dist;
-                    nearest = enemy;
-                }
+                var dist = Vector3.Distance(position, enemy.transform.position);
+                if (!(dist < minDist)) continue;
+                minDist = dist;
+                nearest = enemy;
             }
             return nearest;
         }
-
+        
         public List<EnemyBase> GetNearestEnemies(Vector3 position, int count) 
         {
             List<EnemyBase> sortedEnemies = new List<EnemyBase>(_enemies);

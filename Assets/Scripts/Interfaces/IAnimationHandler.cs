@@ -4,5 +4,7 @@ namespace Interfaces
         void SetMovementSpeed(float speed);
 
         void SetAttack(bool value);
+        
+        void SetShootSpeed(float speed);
     }
 }
