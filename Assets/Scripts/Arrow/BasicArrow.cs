@@ -8,8 +8,7 @@ namespace Arrow
     public class BasicArrow : ArrowBase
     {
         [Inject] private ObjectPool<BasicArrow> _pool;
-
-        [SerializeField] private ParticleSystem hitEffect;
+        
 
         // Çarpışma anında OnTriggerEnter üzerinden hasar veriliyor.
         protected override void OnTriggerEnter(Collider other)
@@ -18,11 +17,6 @@ namespace Arrow
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);
-                if (hitEffect != null)
-                {
-                    hitEffect.transform.position = transform.position;
-                    hitEffect.Play();
-                }
             }
 
             ReturnToPool();

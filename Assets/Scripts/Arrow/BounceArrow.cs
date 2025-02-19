@@ -10,6 +10,7 @@ namespace Arrow
 {
     public class BounceArrow : ArrowBase
     {
+        [SerializeField] protected TrailRenderer trailRenderer;
         [Inject] private IEnemyManager _enemyManager;
         [Inject] private ObjectPool<BounceArrow> _pool;
 
@@ -24,15 +25,29 @@ namespace Arrow
         // Vurulan enemy'leri tutmak için liste
         private List<IEnemy> _hitEnemies = new List<IEnemy>();
 
-        protected override void Awake()
+        
+    
+        protected void Awake()
         {
-            base.Awake();
+            if (trailRenderer != null)
+            {
+                trailRenderer.enabled = false;
+            }
             _cts = new CancellationTokenSource();
         }
+         
+        
 
         public override void Initialize(Vector3 startPosition, Vector3 direction)
         {
             base.Initialize(startPosition, direction);
+            
+            if (trailRenderer != null)
+            {
+                trailRenderer.enabled = true;
+                trailRenderer.Clear();
+            }
+            
             remainingBounces = maxBounceCount;
             isBouncing = false;
             _hitEnemies.Clear();
@@ -103,7 +118,7 @@ namespace Arrow
 
             var finalDirection = (targetPoint - transform.position).normalized;
             velocity = finalDirection * bounceSpeed;
-            transform.rotation = Quaternion.LookRotation(finalDirection);
+           // transform.rotation = Quaternion.LookRotation(finalDirection);
             lifeTimer = Mathf.Max(lifeTimer, 1.5f);
             isBouncing = false;
         }

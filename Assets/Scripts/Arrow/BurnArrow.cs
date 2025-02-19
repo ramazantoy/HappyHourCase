@@ -18,9 +18,8 @@ namespace Arrow
 
         private CancellationTokenSource _cts;
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
             _cts = new CancellationTokenSource();
         }
 
