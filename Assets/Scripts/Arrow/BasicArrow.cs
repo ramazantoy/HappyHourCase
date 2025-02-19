@@ -1,3 +1,4 @@
+using Interfaces;
 using UnityEngine;
 
 using Pool;
@@ -13,13 +14,12 @@ namespace Arrow
         // Çarpışma anında OnTriggerEnter üzerinden hasar veriliyor.
         protected override void OnTriggerEnter(Collider other)
         {
-            var enemy = other.GetComponent<Interfaces.IEnemy>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(damage);
-            }
-
+            if (!other.TryGetComponent(out IEnemy enemy)) return;
+            
+            enemy.TakeDamage(damage);
             ReturnToPool();
+
+
         }
 
         protected override void ReturnToPool()

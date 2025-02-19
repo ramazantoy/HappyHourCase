@@ -7,5 +7,7 @@ namespace Interfaces
        void TakeDamage( float damage);
        
        Vector3 Position { get; }
+
+       void ApplyBurn(float damagePerSecond, float duration);
     }
 }

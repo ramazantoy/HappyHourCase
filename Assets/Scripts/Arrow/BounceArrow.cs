@@ -25,29 +25,28 @@ namespace Arrow
         // Vurulan enemy'leri tutmak için liste
         private List<IEnemy> _hitEnemies = new List<IEnemy>();
 
-        
-    
+
         protected void Awake()
         {
             if (trailRenderer != null)
             {
                 trailRenderer.enabled = false;
             }
+
             _cts = new CancellationTokenSource();
         }
-         
-        
+
 
         public override void Initialize(Vector3 startPosition, Vector3 direction)
         {
             base.Initialize(startPosition, direction);
-            
+
             if (trailRenderer != null)
             {
                 trailRenderer.enabled = true;
                 trailRenderer.Clear();
             }
-            
+
             remainingBounces = maxBounceCount;
             isBouncing = false;
             _hitEnemies.Clear();
@@ -58,15 +57,14 @@ namespace Arrow
         // Eğer bounce başladıysa, OnTriggerEnter çağrılarını yoksayalım.
         protected override void OnTriggerEnter(Collider other)
         {
-       
+            if (!other.TryGetComponent(out IEnemy enemy)) return;
 
-            var enemy = other.GetComponent<IEnemy>();
+            if (!_hitEnemies.Contains(enemy)) return;
 
-            if (enemy != null && !_hitEnemies.Contains(enemy))
-            {
-                enemy.TakeDamage(damage);
-                _hitEnemies.Add(enemy);
-            }
+
+            enemy.TakeDamage(damage);
+            _hitEnemies.Add(enemy);
+
 
             if (remainingBounces > 0)
             {
@@ -83,7 +81,8 @@ namespace Arrow
             ReturnToPool();
         }
 
-        private async UniTaskVoid PerformBounceAsync(Vector3 startPoint, Vector3 targetPoint, CancellationToken cancellationToken)
+        private async UniTaskVoid PerformBounceAsync(Vector3 startPoint, Vector3 targetPoint,
+            CancellationToken cancellationToken)
         {
             isBouncing = true;
             remainingBounces--;
@@ -118,19 +117,20 @@ namespace Arrow
 
             var finalDirection = (targetPoint - transform.position).normalized;
             velocity = finalDirection * bounceSpeed;
-           // transform.rotation = Quaternion.LookRotation(finalDirection);
+            // transform.rotation = Quaternion.LookRotation(finalDirection);
             lifeTimer = Mathf.Max(lifeTimer, 1.5f);
             isBouncing = false;
         }
-        
+
         private void RotateTowardsTarget(Vector3 targetPoint, float rotationSmoothSpeed)
         {
             Vector3 lookTarget = targetPoint;
             Quaternion desiredRotation = Quaternion.LookRotation(lookTarget - transform.position);
             desiredRotation.x = 0;
-            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * rotationSmoothSpeed);
+            transform.rotation =
+                Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * rotationSmoothSpeed);
         }
-        
+
         private IEnemy FindNextEnemy()
         {
             var candidates = _enemyManager.GetNearestEnemies(transform.position, 10);
@@ -141,6 +141,7 @@ namespace Arrow
                     return cand;
                 }
             }
+
             return null;
         }
 

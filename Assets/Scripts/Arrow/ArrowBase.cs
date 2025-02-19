@@ -1,4 +1,5 @@
 using System;
+using Interfaces;
 using UnityEngine;
 
 namespace Arrow
@@ -15,7 +16,6 @@ namespace Arrow
         [SerializeField] protected float airResistance = 0.1f;
         [SerializeField] protected float stabilizationFactor = 5f;
 
-     
 
         [SerializeField] protected float rotationSmoothing = 10f;
 
@@ -26,7 +26,6 @@ namespace Arrow
         protected Quaternion targetRotation;
         protected Vector3 worldUp = Vector3.up;
 
-   
 
         // Fizik hesaplamaları FixedUpdate’de yapılıyor.
         protected virtual void FixedUpdate()
@@ -88,11 +87,10 @@ namespace Arrow
 
         protected virtual void OnTriggerEnter(Collider other)
         {
-            var enemy = other.GetComponent<Interfaces.IEnemy>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(damage);
-            }
+            if (!other.TryGetComponent(out IEnemy enemy)) return;
+
+            enemy.TakeDamage(damage);
+
 
             ReturnToPool();
         }
@@ -101,7 +99,7 @@ namespace Arrow
         {
             isInitialized = false;
             velocity = Vector3.zero;
-            
+
             gameObject.SetActive(false);
         }
 
