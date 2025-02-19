@@ -6,18 +6,11 @@ namespace Arrow
 {
     public abstract class ArrowBase : MonoBehaviour
     {
-        [SerializeField] protected float speed = 20f;
 
-        [SerializeField] protected float damage = 10f;
-        [SerializeField] protected float lifetime = 5f;
+        [SerializeField]
+        private ArrowBaseDataContainer _arrowBaseDataContainer;
 
-        [SerializeField] protected float gravity = 9.8f;
-
-        [SerializeField] protected float airResistance = 0.1f;
-        [SerializeField] protected float stabilizationFactor = 5f;
-
-
-        [SerializeField] protected float rotationSmoothing = 10f;
+        public float BaseDamage => _arrowBaseDataContainer.Damage;
 
         protected float lifeTimer;
         protected bool isInitialized = false;
@@ -44,16 +37,16 @@ namespace Arrow
 
         protected virtual void UpdatePhysics()
         {
-            float dt = Time.fixedDeltaTime;
+            var dt = Time.fixedDeltaTime;
 
             // Yerçekimi uygulaması
-            velocity += Vector3.down * gravity * dt;
+            velocity += Vector3.down * _arrowBaseDataContainer.Gravity * dt;
 
             // Hava direnci
-            float speedSqr = velocity.sqrMagnitude;
+            var speedSqr = velocity.sqrMagnitude;
             if (speedSqr > 0.01f)
             {
-                Vector3 dragForce = -velocity.normalized * speedSqr * airResistance;
+                Vector3 dragForce = -velocity.normalized * speedSqr * _arrowBaseDataContainer.AirResistance;
                 velocity += dragForce * dt;
             }
 
@@ -64,7 +57,7 @@ namespace Arrow
                 Vector3 horizontalVelocity = velocity - verticalVelocity;
                 if (horizontalVelocity.magnitude > 0.1f)
                 {
-                    Vector3 stabilizationForce = -horizontalVelocity.normalized * stabilizationFactor * dt;
+                    Vector3 stabilizationForce = -horizontalVelocity.normalized * _arrowBaseDataContainer.StabilizationFactor * dt;
                     velocity += stabilizationForce;
                 }
             }
@@ -77,9 +70,9 @@ namespace Arrow
             if (velocity.sqrMagnitude > 0.1f)
             {
                 targetRotation = Quaternion.LookRotation(velocity.normalized, worldUp);
-                float currentSpeed = velocity.magnitude;
-                float speedRatio = Mathf.Clamp01(currentSpeed / (speed * 0.8f));
-                float currentRotationSpeed = rotationSmoothing * speedRatio;
+                var currentSpeed = velocity.magnitude;
+                var speedRatio = Mathf.Clamp01(currentSpeed / (_arrowBaseDataContainer.MovementSpeed * 0.8f));
+                var currentRotationSpeed = _arrowBaseDataContainer.RotationSmoothing * speedRatio;
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, dt * currentRotationSpeed);
             }
         }
@@ -89,7 +82,7 @@ namespace Arrow
         {
             if (!other.TryGetComponent(out IEnemy enemy)) return;
 
-            enemy.TakeDamage(damage);
+            enemy.TakeDamage(_arrowBaseDataContainer.Damage);
 
 
             ReturnToPool();
@@ -108,8 +101,8 @@ namespace Arrow
             transform.position = startPosition;
             transform.rotation = Quaternion.LookRotation(direction);
             position = startPosition;
-            velocity = direction.normalized * speed;
-            lifeTimer = lifetime;
+            velocity = direction.normalized *_arrowBaseDataContainer. MovementSpeed;
+            lifeTimer = _arrowBaseDataContainer.Lifetime;
             isInitialized = true;
         }
     }

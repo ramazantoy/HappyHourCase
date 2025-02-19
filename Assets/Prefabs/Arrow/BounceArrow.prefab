@@ -68,13 +68,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d601545653afe77448f810bf7c66378e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 50
-  damage: 10
-  lifetime: 5
-  gravity: 9.8
-  airResistance: 0.1
-  stabilizationFactor: 5
-  rotationSmoothing: 10
+  _arrowBaseDataContainer: {fileID: 11400000, guid: 9e384c024762ca84d8ab61b5c5d7f791, type: 2}
   trailRenderer: {fileID: 2799274786766703892}
   maxBounceCount: 2
   bounceSpeed: 10

@@ -134,6 +134,12 @@ namespace States
                 else if (_playerController.playerSkills.burnDamage)
                 {
                     BurnArrow burnArrow = _burnArrowPool.Spawn();
+
+                    if (_playerController.playerSkills.rageMode)
+                    {
+                        burnArrow.OnRageMode();
+                    }
+
                     arrow = burnArrow;
                 }
                 else

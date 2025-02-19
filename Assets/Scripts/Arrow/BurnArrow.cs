@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Interfaces;
 using Zenject;
@@ -10,31 +11,42 @@ namespace Arrow
     public class BurnArrow : ArrowBase
     {
         [Inject] private ObjectPool<BurnArrow> _pool;
-        
-        private float _burnDamagePerSecond=3f;
-        private float _burnDamageTime=3f;
-        
-        
-        
+
+        [SerializeField] private float _burnDamagePerSecond = 3f;
+        [SerializeField] private float _burnDamageTime = 3f;
+
+
+        private bool _isRageMode = false;
+
+
+        private void OnEnable()
+        {
+            _isRageMode = false;
+        }
+
+        public void OnRageMode()
+        {
+            _isRageMode = true;
+        }
 
         protected override void OnTriggerEnter(Collider other)
         {
             var enemy = other.GetComponent<IEnemy>();
-            
+
             if (enemy == null) return;
-            
-            enemy.TakeDamage(damage);
-            enemy.ApplyBurn(_burnDamagePerSecond,_burnDamageTime);
+
+            // enemy.TakeDamage(BaseDamage);
+
+
+            var damage = _isRageMode ? _burnDamagePerSecond * 2 : _burnDamagePerSecond;
+            enemy.ApplyBurn(damage, _burnDamageTime);
             ReturnToPool();
         }
+
         protected override void ReturnToPool()
         {
-    
-            
             base.ReturnToPool();
             _pool.Despawn(this);
         }
-
-    
     }
 }

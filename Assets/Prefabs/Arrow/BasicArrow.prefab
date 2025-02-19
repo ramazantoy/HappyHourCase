@@ -9849,13 +9849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 695d0c6f05afd23459e5bee178c4c4aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 50
-  damage: 10
-  lifetime: 5
-  gravity: 9.8
-  airResistance: 0.1
-  stabilizationFactor: 5
-  rotationSmoothing: 10
+  _arrowBaseDataContainer: {fileID: 11400000, guid: 9e384c024762ca84d8ab61b5c5d7f791, type: 2}
 --- !u!1 &6499602431396966330
 GameObject:
   m_ObjectHideFlags: 0

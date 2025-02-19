@@ -16,7 +16,7 @@ namespace Arrow
         {
             if (!other.TryGetComponent(out IEnemy enemy)) return;
             
-            enemy.TakeDamage(damage);
+            enemy.TakeDamage(BaseDamage);
             ReturnToPool();
 
 

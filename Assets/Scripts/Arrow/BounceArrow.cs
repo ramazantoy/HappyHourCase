@@ -59,11 +59,9 @@ namespace Arrow
         {
             if (!other.TryGetComponent(out IEnemy enemy)) return;
 
-        
 
+            enemy.TakeDamage(BaseDamage);
 
-            enemy.TakeDamage(damage);
-            
             if (_hitEnemies.Contains(enemy)) return;
             _hitEnemies.Add(enemy);
 
