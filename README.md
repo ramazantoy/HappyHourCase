@@ -95,6 +95,11 @@ Oyun başlatıldığında, rastgele bir harita oluşturulmaktadır. Bu sistem, i
 
 
 
+## Arrow Project Tile (Düşük hız)
+
+
+https://github.com/user-attachments/assets/9b3d4eb3-4883-40d9-93f2-951a735fa32f
+
 
 
 
