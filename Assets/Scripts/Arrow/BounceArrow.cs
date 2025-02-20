@@ -22,8 +22,8 @@ namespace Arrow
         [SerializeField] private int maxBounceCount = 1;
         [SerializeField] private float bounceSpeed = 25f;
 
-        private int remainingBounces;
-        private bool isBouncing = false;
+        private int _remainingBounces;
+        private bool _isBouncing = false;
         private CancellationTokenSource _cts;
 
         private List<IEnemy> _hitEnemies = new List<IEnemy>();
@@ -34,6 +34,7 @@ namespace Arrow
             {
                 trailRenderer.enabled = false;
             }
+
             _cts = new CancellationTokenSource();
         }
 
@@ -46,70 +47,70 @@ namespace Arrow
                 trailRenderer.enabled = true;
                 trailRenderer.Clear();
             }
-            isBouncing = false;
+
+            _isBouncing = false;
             _hitEnemies.Clear();
             _cts?.Cancel();
             _cts = new CancellationTokenSource();
-            
         }
 
         public void OnRageMode()
         {
-            remainingBounces = maxBounceCount * 2;
+            _remainingBounces = maxBounceCount * 2;
         }
-        
+
         protected override void OnTriggerEnter(Collider other)
         {
-            
-     
             if (!isInitialized) return;
-            
+
             if (!other.TryGetComponent(out IEnemy enemy)) return;
-            
-            if (isBouncing) return;
+
+            if (_isBouncing) return;
 
             if (!_hitEnemies.Contains(enemy))
             {
                 enemy.TakeDamage(BaseDamage);
                 _hitEnemies.Add(enemy);
             }
-            
-            isBouncing = true;
+
+            _isBouncing = true;
             BounceLoopAsync(_cts.Token).Forget();
         }
-        
+
         private async UniTask BounceLoopAsync(CancellationToken token)
         {
-            while (remainingBounces > 0 && !token.IsCancellationRequested)
+            while (_remainingBounces > 0 && !token.IsCancellationRequested)
             {
                 await UniTask.Delay(50, cancellationToken: token);
-                
+
                 if (!gameObject.activeInHierarchy) break;
-        
+
                 var nextEnemy = FindNextEnemy();
                 if (nextEnemy == null)
                 {
                     break;
                 }
-        
+
                 Vector3 nextTargetPos = nextEnemy.Position + Vector3.up * 1.5f;
                 await PerformBounceAsync(transform.position, nextTargetPos, token);
-        
+
                 if (!_hitEnemies.Contains(nextEnemy))
                 {
                     nextEnemy.TakeDamage(BaseDamage);
                     _hitEnemies.Add(nextEnemy);
-                    remainingBounces--;
+                    _remainingBounces--;
                 }
             }
+
             ReturnToPool();
         }
 
-     
-        private async UniTask PerformBounceAsync(Vector3 startPoint, Vector3 targetPoint, CancellationToken cancellationToken)
+
+        private async UniTask PerformBounceAsync(Vector3 startPoint, Vector3 targetPoint,
+            CancellationToken cancellationToken)
         {
             var distance = Vector3.Distance(startPoint, targetPoint);
-            var bounceTravelTime = distance / bounceSpeed; 
+            var bounceTravelTime = distance / bounceSpeed;
             var startTime = Time.time;
             var rotationSmoothSpeed = 10f;
 
@@ -143,7 +144,8 @@ namespace Arrow
             var lookTarget = targetPoint;
             var desiredRotation = Quaternion.LookRotation(lookTarget - transform.position);
             desiredRotation.x = 0;
-            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * rotationSmoothSpeed);
+            transform.rotation =
+                Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * rotationSmoothSpeed);
         }
 
         private IEnemy FindNextEnemy()
@@ -156,12 +158,19 @@ namespace Arrow
                     return cand;
                 }
             }
+
             return null;
         }
 
         protected override void Update()
         {
-           //Zamanla değil bounce yaparak yok olması için.
+            if (!isInitialized || _isBouncing) return; // İsabetsiz atış olursa süre dolunca pool'a dönecek 
+
+            lifeTimer -= Time.deltaTime;
+            if (lifeTimer <= 0f)
+            {
+                ReturnToPool();
+            }
         }
 
         protected override void ReturnToPool()
@@ -170,16 +179,15 @@ namespace Arrow
             {
                 _cts?.Cancel();
             }
-    
-            
-            remainingBounces = maxBounceCount;
-            
+
+
+            _remainingBounces = maxBounceCount;
+
             base.ReturnToPool();
             if (_pool != null)
             {
                 _pool.Despawn(this);
             }
-    
         }
 
 
@@ -187,7 +195,7 @@ namespace Arrow
         {
             _cts?.Cancel();
             _cts?.Dispose();
-            _cts= null;
+            _cts = null;
         }
     }
 }
