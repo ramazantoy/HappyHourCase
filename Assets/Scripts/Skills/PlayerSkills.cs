@@ -1,7 +1,13 @@
 using System;
 using UnityEngine;
 
+
 namespace Skills {
+    
+    /// <summary>
+    /// Oyuncu'nn aktif skillerinin yer aldığı bir mono sınıfı mono olmasının sebebi hem canvas tarafında hemde player tarafında rahatça erişmek amacıyla.
+    /// İçerisinde bir action var ama kullanılmadı ileride ona geçilip player'ın onu dinlemesi eklenebilir. Şuan state'ler çalışırken Aktif skilleri kontrol ediyor.
+    /// </summary>
     public class PlayerSkills : MonoBehaviour {
         
         public bool arrowMultiplication;

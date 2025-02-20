@@ -1,9 +1,11 @@
 using Interfaces;
 using Player;
-using UnityEngine;
 
 namespace States
 {
+    /// <summary>
+    /// ICharacter State'in idle state'i idle sırasında sadece animasyonun hareket hızını sıfır yapıyoruz böylelikle blend three idle'a geçiyor.
+    /// </summary>
     public class IdleState : ICharacterState {
         
         private readonly PlayerController player;

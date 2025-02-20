@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 namespace UI
 {
+    /// <summary>
+    /// UI'da yer alan butonların kullanıldığında dummy bir outline vermesi ve kullanım durumunda playerskills sınıfında yer alan ilgili skill'in durumunun değişmesini sağlıyor.
+    /// İçerisinde yer alan coroutune kaldırılabilir yerine UniTaskVoid eklenebilir yada bu işlem update'e taşınabilir.
+    /// </summary>
     public class SkillButton : MonoBehaviour
     {
         [SerializeField] private List<Color> _activeColors;

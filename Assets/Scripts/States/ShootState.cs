@@ -2,15 +2,19 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using Enemy;
 using Interfaces;
 using Player;
-using Zenject;
 using Arrow;
 using Pool;
 
 namespace States
 {
+    /// <summary>
+    /// Karakterin shoot state'i arrowların spawn edilmesi hedefe göre setlenmesi gibi işlemleri yapıyor.
+    /// CTS token kullanıyor yani async bir işlem yaparken bu state'den çıkılırsa işlemleri iptal ediyor.
+    /// Örneğin çoklu ok spawn mekaniği animasyondan gelen event'a göre çalışmıyor async bir işlem eğer player harekete geçerse çoklu ok spawn işlemi iptal oluyor.
+    /// 
+    /// </summary>
     public class ShootState : ICharacterState
     {
         private readonly PlayerController _playerController;

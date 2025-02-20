@@ -6,8 +6,13 @@ using System.Collections.Generic;
 using Zenject;
 using Pool;
 
+
 namespace Arrow
 {
+    /// <summary>
+    /// Bounce Arrow temel hareket sistemini basearrow'dan alıp ilk çarpışma sonrası kendi içierisinde verilen değere göre bounce işlmeini gerçekleştiriyor.
+    /// Bu işlemi unitask ile async olarak yapıyor. Oyun kapatılırsa token tutuyor ve onuu killiyor.
+    /// </summary>
     public class BounceArrow : ArrowBase
     {
         [SerializeField] protected TrailRenderer trailRenderer;
@@ -156,8 +161,7 @@ namespace Arrow
 
         protected override void Update()
         {
-            if (!isInitialized) return;
-            // Bounce loop kendi içinde remaining kontrolünü yapıyor.
+           //Zamanla değil bounce yaparak yok olması için.
         }
 
         protected override void ReturnToPool()

@@ -5,19 +5,12 @@ using Zenject;
 
 namespace Arrow
 {
+    /// <summary>
+    /// Basit Arrow script'i base'e bağlı özellikleri kullanıyor.
+    /// </summary>
     public class BasicArrow : ArrowBase
     {
         [Inject] private ObjectPool<BasicArrow> _pool;
-
-
-        // Çarpışma anında OnTriggerEnter üzerinden hasar veriliyor.
-        protected override void OnTriggerEnter(Collider other)
-        {
-            if (!other.TryGetComponent(out IEnemy enemy)) return;
-
-            enemy.TakeDamage(BaseDamage);
-            ReturnToPool();
-        }
 
         protected override void ReturnToPool()
         {

@@ -1,13 +1,14 @@
-using System;
 using UnityEngine;
 using Interfaces;
 using Zenject;
 using Pool;
-using Cysharp.Threading.Tasks;
-using System.Threading;
 
 namespace Arrow
 {
+    /// <summary>
+    /// Temel hareket mekanikleribi Base class'tan alıyor.
+    /// Bir hedefe isabet ederse enemy'de yer alan async yanma işlemini başlatıyor enemy'nin yanma stack'ine +1 değer katıyor.
+    /// </summary>
     public class BurnArrow : ArrowBase
     {
         [Inject] private ObjectPool<BurnArrow> _pool;

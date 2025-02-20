@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Handlers
 {
+    /// <summary>
+    /// Player'ın animasyonlarını yöneten Animasyon Handler sınıfı
+    /// Interface'i aracılığıyla state'lere bind ediliyor.
+    /// </summary>
     public class AnimatorHandler : IAnimationHandler {
         private readonly Animator animator;
 

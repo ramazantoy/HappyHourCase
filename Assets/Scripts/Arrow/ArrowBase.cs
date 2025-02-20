@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace Arrow
 {
+    /// <summary>
+    /// Arrow'ların base class'ı arrowlar bu class'dan inherit alıp farklı özellikleri  kendi içlerinde kullanacaklar.
+    /// Arrow'un hareket etmesi ayarlanması gibi işlemler bu sınıf aracılığıyla yapılıyor.
+    /// </summary>
     public abstract class ArrowBase : MonoBehaviour
     {
 

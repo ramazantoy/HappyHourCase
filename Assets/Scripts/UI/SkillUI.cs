@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 namespace UI
 {
+    /// <summary>
+    /// Butonlardan gelen onClick event'ını dinleyip oyuncunun skill durumunu değiştiren dummy bir sınıf ileride daha düzgün bir sınıf yazılıp kaldırılabilir.
+    /// </summary>
     public class SkillUI : MonoBehaviour
     {
         public Button arrowMultiplicationButton;
@@ -37,9 +40,5 @@ namespace UI
             SetListeners();
         }
 
-        private void OnDestroy()
-        {
-            
-        }
     }
 }

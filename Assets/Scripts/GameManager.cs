@@ -1,7 +1,11 @@
-using System;
+
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// GameManager sınıfı şimdilik sadece oyun başlangıcında random bir haritanın seçilmesini sağlıyor.
+/// İleride Zenject ile bind edilip oyuunun state'lerini yönetebilir. Play Pause MainMenu gibi
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private List<GameObject> _maps;
@@ -13,7 +17,7 @@ public class GameManager : MonoBehaviour
 
     private void GenerateRandomMap()
     {
-        var index = UnityEngine.Random.Range(0, _maps.Count);
+        var index = Random.Range(0, _maps.Count);
 
         _maps[index].SetActive(true);
     }

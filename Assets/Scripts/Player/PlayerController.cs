@@ -9,6 +9,11 @@ using Zenject;
 
 namespace Player
 {
+    
+    /// <summary>
+    /// Player Controller sınıfı oyuncunun hareket etmesi state değiştirmesi ateş etmesi gibi işlemleri yapıyor.
+    /// State Machine aracılığıyla statelerini yönetiyorç
+    /// </summary>
     public class PlayerController : MonoBehaviour
     {
         [SerializeField]

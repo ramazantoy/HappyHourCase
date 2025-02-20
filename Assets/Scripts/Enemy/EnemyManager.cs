@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace Enemy
 {
+    /// <summary>
+    /// Oyundaki enemyleri yönetecek olan manager sınıfı zenject ile ihtiyacı olan sınıflara bind ediliyor DP ınjection ile sadece interface örneği dağıtılıyor.
+    /// Oyunda her zaman 10+ enemy olmasını sağlıyor.
+    /// </summary>
     public class EnemyManager : MonoBehaviour, IEnemyManager 
     {   
         private ObjectPool<EnemyBase> _yBotPool;
@@ -63,7 +67,7 @@ namespace Enemy
         
         public List<EnemyBase> GetNearestEnemies(Vector3 position, int count) 
         {
-            List<EnemyBase> sortedEnemies = new List<EnemyBase>(_enemies);
+            var sortedEnemies = new List<EnemyBase>(_enemies);
             sortedEnemies.Sort((a, b) => Vector3.Distance(a.transform.position, position)
                 .CompareTo(Vector3.Distance(b.transform.position, position)));
             return sortedEnemies.GetRange(0, Mathf.Min(count, sortedEnemies.Count));

@@ -3,6 +3,9 @@ using UnityEngine.Serialization;
 
 namespace Arrow
 {
+    /// <summary>
+    /// Arrow'a ait olan parametrelerin bulundu bir SO script'i
+    /// </summary>
     [CreateAssetMenu(fileName = "ArrowBaseData", menuName = "ScriptableObjects/ArrowBaseData", order = 1)]
     public class ArrowBaseDataContainer : ScriptableObject
     {

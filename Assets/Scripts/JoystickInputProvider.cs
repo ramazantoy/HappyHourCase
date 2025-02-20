@@ -1,6 +1,10 @@
 using Interfaces;
 using UnityEngine;
 
+
+/// <summary>
+/// Joystick paketinden gelen input'un dağıtılmasını sağlıyor interface'i aracılığıyla
+/// </summary>
 public class JoystickInputProvider : IInputProvider {
     
     private readonly VariableJoystick joystick;
