@@ -171,7 +171,10 @@ namespace States
                 }
 
                 arrow.Initialize(spawnPoint, finalVelocity);
-                Debug.DrawRay(spawnPoint, finalVelocity.normalized * 10f, Color.red, 1f);
+#if UNITY_EDITOR
+                Debug.DrawRay(spawnPoint, finalVelocity.normalized * 10f, Color.red, 1f);    
+#endif
+             
             }
         }
 
