@@ -1,6 +1,6 @@
 # HappyHourCase
 
-HappyHourCase projesi, **SOLID prensiplerine** uygun, esnek ve modüler bir mimari ile geliştirilmiştir. Projede durum yönetimi için **StateMachine** yapısı, bağımlılık yönetimi ve performans optimizasyonu için ise **Zenject** kullanılarak interface binding ve ObjectPooling işlemleri gerçekleştirilmiştir. Ayrıca, proje kapsamında oklar, düşmanlar ve oyuncu kontrolü için kalıtım yoluyla genişletilebilir yapı oluşturulmuştur.
+
 
 ## Proje Özellikleri
 
