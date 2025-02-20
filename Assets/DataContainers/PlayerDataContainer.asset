@@ -20,3 +20,5 @@ MonoBehaviour:
     MaxX: 2.5
     MinZ: -8
     MaxZ: -3.5
+  ShootSfx: 1
+  ShootClip: {fileID: 8300000, guid: 78244d885b4e08a44a867adef9f2357a, type: 3}

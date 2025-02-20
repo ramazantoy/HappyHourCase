@@ -16,13 +16,15 @@ namespace Player
         public float RotationSpeed => _playerDataContainer.RotationSpeed;
         public float BaseAttackSpeed => _playerDataContainer.BaseAttackSpeed;
         
-        public Transform ArrowTransform => arrowTransform;
+        public Transform ArrowTransform => _arrowTransform;
         
         
+    
         [Header("**Editor Values**")]
-        [SerializeField] private PlayerState currentPlayerState;
-        [SerializeField] private Animator animator;
-        [SerializeField] private Transform arrowTransform;
+        [SerializeField] private PlayerState _currentPlayerState; 
+        [SerializeField] private Animator _animator; 
+        [SerializeField] private Transform _arrowTransform; 
+        [SerializeField] private AudioSource _audioSource;
     
 
         [Inject] private IEnemyManager _enemyManager;
@@ -53,15 +55,14 @@ namespace Player
         private void Start()
         {
             InputProvider = new JoystickInputProvider(_joystick);
-            AnimationHandler = new AnimatorHandler(animator);
+            AnimationHandler = new AnimatorHandler(_animator);
 
             idleState = new IdleState(this);
             moveState = new MoveState(this);
-            // ShootState artık arrow pool referanslarını da alıyor.
             shootState = new ShootState(this, _enemyManager, _basicArrowPool, _bounceArrowPool, _burnArrowPool);
 
             currentState = idleState;
-            currentPlayerState = PlayerState.Idle;
+            _currentPlayerState = PlayerState.Idle;
         }
 
         private void Update()
@@ -93,12 +94,12 @@ namespace Player
             currentState.Exit();
             currentState = newState;
 
-            currentPlayerState = currentState switch
+            _currentPlayerState = currentState switch
             {
                 IdleState => PlayerState.Idle,
                 MoveState => PlayerState.Move,
                 ShootState => PlayerState.Shoot,
-                _ => currentPlayerState
+                _ => _currentPlayerState
             };
 
             currentState.Enter();
@@ -122,12 +123,18 @@ namespace Player
             AnimationHandler.SetMovementSpeed(movement.magnitude);
         }
 
-        // Animasyon event'inden çağrılır.
+ 
         public void OnAttackAnimationEvent()
         {
-            if (currentPlayerState != PlayerState.Shoot) return;
+            if (_currentPlayerState != PlayerState.Shoot) return;
             shootState.HandleAttackAnimationEvent();
+            if (_playerDataContainer.ShootSfx)
+            {
+                _audioSource.PlayOneShot(_playerDataContainer.ShootClip);
+            }
         }
+        
+
 
         private void OnDestroy()
         {

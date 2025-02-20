@@ -3423,6 +3423,7 @@ GameObject:
   - component: {fileID: 241279324}
   - component: {fileID: 241279323}
   - component: {fileID: 241279325}
+  - component: {fileID: 241279326}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3505,6 +3506,14 @@ Skybox:
   m_GameObject: {fileID: 241279316}
   m_Enabled: 1
   m_CustomSkybox: {fileID: 2100000, guid: baef7505b9e48404cb74585601f49ff9, type: 2}
+--- !u!81 &241279326
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241279316}
+  m_Enabled: 1
 --- !u!1001 &255003532
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14457,11 +14466,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 2297097188129316030, guid: 8a08e661034047d4188437f2a37f694d, type: 3}
   m_PrefabInstance: {fileID: 852290850}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &855381503 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 853097350166960408, guid: bbb08fcea85cbba429774521992f1379, type: 3}
-  m_PrefabInstance: {fileID: 1799815931}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &862178531
 PrefabInstance:
@@ -30362,10 +30366,6 @@ PrefabInstance:
       value: PlayerController
       objectReference: {fileID: 0}
     - target: {fileID: 2995160199535841260, guid: bbb08fcea85cbba429774521992f1379, type: 3}
-      propertyPath: speed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2995160199535841260, guid: bbb08fcea85cbba429774521992f1379, type: 3}
       propertyPath: _joystick
       value: 
       objectReference: {fileID: 1925173264}
@@ -30373,18 +30373,6 @@ PrefabInstance:
       propertyPath: playerSkills
       value: 
       objectReference: {fileID: 726582011}
-    - target: {fileID: 2995160199535841260, guid: bbb08fcea85cbba429774521992f1379, type: 3}
-      propertyPath: arrowTransform
-      value: 
-      objectReference: {fileID: 855381503}
-    - target: {fileID: 2995160199535841260, guid: bbb08fcea85cbba429774521992f1379, type: 3}
-      propertyPath: baseAttackSpeed
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2995160199535841260, guid: bbb08fcea85cbba429774521992f1379, type: 3}
-      propertyPath: _playerDataContainer
-      value: 
-      objectReference: {fileID: 11400000, guid: f9736f7da55cdb643a74e00465fdaa4a, type: 2}
     - target: {fileID: 4537385883784305261, guid: bbb08fcea85cbba429774521992f1379, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -30424,6 +30412,10 @@ PrefabInstance:
     - target: {fileID: 4537385883784305261, guid: bbb08fcea85cbba429774521992f1379, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371062851366889909, guid: bbb08fcea85cbba429774521992f1379, type: 3}
+      propertyPath: m_Volume
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

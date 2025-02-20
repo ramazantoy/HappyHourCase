@@ -13,6 +13,8 @@ namespace Player
         public float RotationSpeed = 10f; 
         public float BaseAttackSpeed = 3f;
         public VectorClamps MovementClamps;
+        public bool ShootSfx = true;
+        public AudioClip ShootClip;
     }
 
     [System.Serializable]
