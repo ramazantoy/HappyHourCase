@@ -36,6 +36,7 @@
 - **SkyBox:** [Unity Asset Store](https://assetstore.unity.com/packages/2d/textures-materials/sky/customizable-skybox-174576)
 - **UniTask:** [GitHub](https://github.com/Cysharp/UniTask)
 - **Zenject:** [GitHub](https://github.com/modesttree/Zenject)
+- **UI:** Dall-E
 
 ## Bölüm Açıklamaları
 
